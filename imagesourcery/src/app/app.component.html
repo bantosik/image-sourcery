@@ -1,0 +1,62 @@
+<div class="window">
+
+  <div id="notification" [class.hidden]="!notificationOpened">
+    <p id="message">{{ notificationMessage }}</p>
+    <button id="close-button" (click)="closeNotification()">
+      Close
+    </button>
+    <button id="restart-button" (click)="restartApp()" [class.hidden]="!restartAvailable">
+      Restart
+    </button>
+  </div>
+
+  <!-- .toolbar-header sits at the top of your app -->
+  <header class="toolbar toolbar-header">
+    <h1 class="title">Image sourcery {{ version }}</h1>
+  </header>
+
+  <div class="window-content">
+    <div class="pane-group">
+      <div class="pane-sm sidebar">
+        <form>
+          <div class="form-group">
+            <label>Configure source directory</label>
+            <button (click)="selectSourceDir()" [title]="selectedSourcePath" [class.btn-negative]="selectedSourcePath == null" class="btn btn-large form-control">Select</button>
+          </div>
+          <div class="form-group">
+            <label>Configure target directory</label>
+            <button (click)="selectTargetDir()" [title]="selectedTargetPath" [class.btn-negative]="selectedTargetPath == null" class="btn btn-large form-control">Select</button>
+          </div>
+          <div class="form-group">
+            <input type="text form-control" placeholder="Class name..." [(ngModel)]="newClass" [ngModelOptions]="{standalone: true}"/>
+          </div>
+          <div class="form-group">
+            <button (click)="addClass()" class="btn btn-large form-control" [disabled]="!hasBothDirs() || this.currentFileData == null">Add class</button>
+          </div>
+        </form>
+        <ul class="list-group">
+          <li class="list-group-item" *ngFor="let cl of classes">
+            <div class="media-body" (click)="assign(cl.cl)">
+              <strong>{{ cl.cl }}({{cl.digit}})</strong>
+            </div>
+          </li>
+        </ul>
+        <form>
+          <div class="form-group">
+            <button (click)="prev()" class="btn btn-large form-control">Previous</button>
+          </div>
+          <div class="form-group">
+            <button (click)="next()" class="btn btn-large form-control">Next</button>
+          </div>
+        </form>
+      </div>
+      <div class="pane">
+        <img *ngIf="currentFileData" [src]="currentFileData"/>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
