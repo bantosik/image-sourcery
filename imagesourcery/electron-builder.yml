@@ -1,3 +1,6 @@
 appId: com.example.ElectronAutoUpdate
 publish:
   provider: github
+files:
+  - "dist/app/**/*"
+  - "main.js"
