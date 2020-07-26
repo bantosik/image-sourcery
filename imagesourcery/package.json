@@ -6,11 +6,16 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
+    "build": "electron-builder build --win --publish never",
+    "deploy": "electron-builder build --win --publish always",
     "start:electron": "ng build --base-href ./ && electron ."
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "git@github.com:bantosik/image-sourcery.git"
   },
   "private": true,
   "dependencies": {
