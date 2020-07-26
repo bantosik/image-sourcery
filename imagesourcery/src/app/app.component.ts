@@ -46,12 +46,14 @@ export class AppComponent implements OnInit {
     });
 
     this._electronService.ipcRenderer.on('update_available', () => {
+      console.log('got update_available in renderer');
       this._electronService.ipcRenderer.removeAllListeners('update_available');
       this.notificationMessage = 'A new update is available. Downloading now...';
       this.notificationOpened = true;
     });
 
     this._electronService.ipcRenderer.on('update_downloaded', () => {
+      console.log('got update_downloaded in renderer');
       this._electronService.ipcRenderer.removeAllListeners('update_downloaded');
       this.notificationMessage = 'Update Downloaded. It will be installed on restart. Restart now?';
       this.restartAvailable = true;
@@ -91,6 +93,7 @@ export class AppComponent implements OnInit {
     if (paths != null && paths.length > 0) {
       this.selectedTargetPath = paths[0];
     }
+    setTimeout(() => { this.notificationOpened = true; }, 1000)
   }
 
   addClass() {
