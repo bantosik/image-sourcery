@@ -42,6 +42,7 @@ export class AppComponent implements OnInit {
     this._electronService.ipcRenderer.on('app_version', (event, arg) => {
       this._electronService.ipcRenderer.removeAllListeners('app_version');
       self.version = 'Version ' + arg.version;
+      console.log('Got new version');
       self.changeDetection.detectChanges();
     });
 
@@ -50,6 +51,7 @@ export class AppComponent implements OnInit {
       this._electronService.ipcRenderer.removeAllListeners('update_available');
       this.notificationMessage = 'A new update is available. Downloading now...';
       this.notificationOpened = true;
+      self.changeDetection.detectChanges();
     });
 
     this._electronService.ipcRenderer.on('update_downloaded', () => {
@@ -58,6 +60,7 @@ export class AppComponent implements OnInit {
       this.notificationMessage = 'Update Downloaded. It will be installed on restart. Restart now?';
       this.restartAvailable = true;
       this.notificationOpened = true;
+      self.changeDetection.detectChanges();
     });
   }
 

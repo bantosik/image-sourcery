@@ -3,6 +3,7 @@ const url = require("url");
 const path = require("path");
 const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
+const log = require('electron-log');
 
 let mainWindow
 
@@ -30,7 +31,12 @@ function createWindow () {
   });
 
   mainWindow.once('ready-to-show', () => {
-    autoUpdater.checkForUpdatesAndNotify();
+    log.info('ready-to-show checking for updates');
+    autoUpdater.checkForUpdatesAndNotify().then(
+      (x) => {
+        log.info('Got updates ' + JSON.stringify(x));
+      }
+    );
   });
 }
 
@@ -86,9 +92,11 @@ ipcMain.on('restart_app', () => {
 });
 
 autoUpdater.on('update-available', () => {
+  log.info('Got update-available in main process');
   mainWindow.webContents.send('update_available');
 });
 
 autoUpdater.on('update-downloaded', () => {
+  log.info('Got update-downloaded in main process');
   mainWindow.webContents.send('update_downloaded');
 });
