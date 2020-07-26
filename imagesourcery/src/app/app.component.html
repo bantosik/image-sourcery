@@ -31,7 +31,7 @@
             <input type="text form-control" placeholder="Class name..." [(ngModel)]="newClass" [ngModelOptions]="{standalone: true}"/>
           </div>
           <div class="form-group">
-            <button (click)="addClass()" class="btn btn-large form-control" [disabled]="!hasBothDirs() || this.currentFileData == null">Add class</button>
+            <button (click)="addClass()" class="btn btn-large form-control" [disabled]="!hasBothDirs() || this.currentFileData == null">Add new class</button>
           </div>
         </form>
         <ul class="list-group">
