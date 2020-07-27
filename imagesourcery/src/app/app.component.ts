@@ -11,6 +11,14 @@ interface ClassDescription {
   digit: number;
 }
 
+interface UserData {
+  sourceDir: string;
+  targetDir: string;
+  current: number;
+  classes: string[]
+}
+
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -62,6 +70,13 @@ export class AppComponent implements OnInit {
       this.notificationOpened = true;
       self.changeDetection.detectChanges();
     });
+
+    this.initializeFromLocalStorage();
+    if (this.selectedSourcePath) {
+      const files = this._electronService.ipcRenderer.sendSync('list-dir', this.selectedSourcePath);
+      this.files = files;
+      this.getCurrentImage();
+    }
   }
 
   @HostListener('window:keyup', ['$event'])
@@ -85,6 +100,7 @@ export class AppComponent implements OnInit {
     const paths = this._electronService.remote.dialog.showOpenDialogSync({properties: ['openDirectory']});
     if (paths != null && paths.length > 0) {
       this.selectedSourcePath = paths[0];
+      this.setSelectedSourcePathToStorage(this.selectedSourcePath);
       const files = this._electronService.ipcRenderer.sendSync('list-dir', this.selectedSourcePath);
       this.files = files;
       this.getCurrentImage();
@@ -95,8 +111,8 @@ export class AppComponent implements OnInit {
     const paths = this._electronService.remote.dialog.showOpenDialogSync({properties: ['openDirectory']});
     if (paths != null && paths.length > 0) {
       this.selectedTargetPath = paths[0];
+      this.setSelectedTargetPathToStorage(this.selectedTargetPath);
     }
-    setTimeout(() => { this.notificationOpened = true; }, 1000)
   }
 
   addClass() {
@@ -106,6 +122,7 @@ export class AppComponent implements OnInit {
     const trimmedClass = this.newClass.trim();
     if (trimmedClass.length !== 0) {
       this.classes.push({cl: trimmedClass, digit: this.currentClass});
+      this.addClassToStorage(trimmedClass);
       this.digitToClass.set(this.currentClass, trimmedClass);
       this.currentClass += 1;
       this.newClass = '';
@@ -127,6 +144,7 @@ export class AppComponent implements OnInit {
     this.files = files;
     if (this.current == this.files.length && this.current != 0) {
       this.current = this.files.length - 1;
+      this.setCurrentToStorage(this.current);
     }
     this.getCurrentImage();
   }
@@ -157,6 +175,7 @@ export class AppComponent implements OnInit {
     } else {
       this.current = this.current - 1;
     }
+    this.setCurrentToStorage(this.current);
     this.getCurrentImage();
   }
 
@@ -167,7 +186,7 @@ export class AppComponent implements OnInit {
     } else {
       this.current = this.current + 1;
     }
-
+    this.setCurrentToStorage(this.current);
     this.getCurrentImage();
   }
 
@@ -188,5 +207,76 @@ export class AppComponent implements OnInit {
 
   restartApp() {
     this._electronService.ipcRenderer.send('restart_app');
+  }
+
+  private initializeFromLocalStorage() {
+    const userRawData = localStorage.getItem('userData');
+    if (userRawData) {
+      const userData = JSON.parse(userRawData) as Partial<UserData>;
+      if (userData.classes) {
+        for(let cl of userData.classes) {
+          this.classes.push({cl: cl, digit: this.currentClass});
+          this.digitToClass.set(this.currentClass, cl);
+          this.currentClass += 1;
+        }
+      }
+      if (userData.sourceDir) {
+        this.selectedSourcePath = userData.sourceDir;
+      }
+      if (userData.targetDir) {
+        this.selectedTargetPath = userData.targetDir;
+      }
+      if (userData.current) {
+        this.current = userData.current;
+      }
+    }
+  }
+
+  private setCurrentToStorage(current: number) {
+    const userRawData = localStorage.getItem('userData');
+    let userData;
+    if (userRawData) {
+      userData = JSON.parse(userRawData) as Partial<UserData>;
+    } else {
+      userData = {classes: []};
+    }
+    userData.current = current;
+    localStorage.setItem('userData', JSON.stringify(userData));
+  }
+
+  private addClassToStorage(trimmedClass: string) {
+    const userRawData = localStorage.getItem('userData');
+    let userData;
+    if (userRawData) {
+      userData = JSON.parse(userRawData) as Partial<UserData>;
+    } else {
+      userData = {classes: []};
+    }
+    userData.classes.push(trimmedClass);
+    localStorage.setItem('userData', JSON.stringify(userData));
+  }
+
+  private setSelectedSourcePathToStorage(selectedSourcePath: string) {
+    const userRawData = localStorage.getItem('userData');
+    let userData;
+    if (userRawData) {
+      userData = JSON.parse(userRawData) as Partial<UserData>;
+    } else {
+      userData = {classes: []};
+    }
+    userData.sourceDir = selectedSourcePath;
+    localStorage.setItem('userData', JSON.stringify(userData));
+  }
+
+  private setSelectedTargetPathToStorage(selectedTargetPath: string) {
+    const userRawData = localStorage.getItem('userData');
+    let userData;
+    if (userRawData) {
+      userData = JSON.parse(userRawData) as Partial<UserData>;
+    } else {
+      userData = {classes: []};
+    }
+    userData.targetDir = selectedTargetPath;
+    localStorage.setItem('userData', JSON.stringify(userData));
   }
 }

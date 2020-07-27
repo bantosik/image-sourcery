@@ -4,3 +4,4 @@ publish:
 files:
   - "dist/app/**/*"
   - "main.js"
+  - "package.json"
