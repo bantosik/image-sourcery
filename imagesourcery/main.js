@@ -5,6 +5,8 @@ const fs = require('fs');
 const { autoUpdater } = require('electron-updater');
 const log = require('electron-log');
 
+log.transports.file.level = 'info';
+
 let mainWindow
 
 function createWindow () {
