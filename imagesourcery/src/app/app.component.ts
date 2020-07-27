@@ -100,7 +100,7 @@ export class AppComponent implements OnInit {
     const paths = this._electronService.remote.dialog.showOpenDialogSync({properties: ['openDirectory']});
     if (paths != null && paths.length > 0) {
       this.selectedSourcePath = paths[0];
-      this.setSelectedSourcePathToStorage(this.selectedSourcePath);
+      AppComponent.execInStorageRetrieval((userData) => { userData.sourceDir = this.selectedSourcePath });
       const files = this._electronService.ipcRenderer.sendSync('list-dir', this.selectedSourcePath);
       this.files = files;
       this.getCurrentImage();
@@ -111,7 +111,7 @@ export class AppComponent implements OnInit {
     const paths = this._electronService.remote.dialog.showOpenDialogSync({properties: ['openDirectory']});
     if (paths != null && paths.length > 0) {
       this.selectedTargetPath = paths[0];
-      this.setSelectedTargetPathToStorage(this.selectedTargetPath);
+      AppComponent.execInStorageRetrieval((userData) => { userData.targetDir = this.selectedTargetPath });
     }
   }
 
@@ -122,7 +122,7 @@ export class AppComponent implements OnInit {
     const trimmedClass = this.newClass.trim();
     if (trimmedClass.length !== 0) {
       this.classes.push({cl: trimmedClass, digit: this.currentClass});
-      this.addClassToStorage(trimmedClass);
+      AppComponent.execInStorageRetrieval((userData) => { userData.classes.push(trimmedClass); });
       this.digitToClass.set(this.currentClass, trimmedClass);
       this.currentClass += 1;
       this.newClass = '';
@@ -144,7 +144,7 @@ export class AppComponent implements OnInit {
     this.files = files;
     if (this.current == this.files.length && this.current != 0) {
       this.current = this.files.length - 1;
-      this.setCurrentToStorage(this.current);
+      AppComponent.execInStorageRetrieval((userData) => { userData.current = this.current });
     }
     this.getCurrentImage();
   }
@@ -175,7 +175,7 @@ export class AppComponent implements OnInit {
     } else {
       this.current = this.current - 1;
     }
-    this.setCurrentToStorage(this.current);
+    AppComponent.execInStorageRetrieval((userData) => { userData.current = this.current });
     this.getCurrentImage();
   }
 
@@ -186,7 +186,7 @@ export class AppComponent implements OnInit {
     } else {
       this.current = this.current + 1;
     }
-    this.setCurrentToStorage(this.current);
+    AppComponent.execInStorageRetrieval((userData) => { userData.current = this.current });
     this.getCurrentImage();
   }
 
@@ -232,7 +232,7 @@ export class AppComponent implements OnInit {
     }
   }
 
-  private setCurrentToStorage(current: number) {
+  private static execInStorageRetrieval(toExec: (data: Partial<UserData>) => void) {
     const userRawData = localStorage.getItem('userData');
     let userData;
     if (userRawData) {
@@ -240,43 +240,7 @@ export class AppComponent implements OnInit {
     } else {
       userData = {classes: []};
     }
-    userData.current = current;
-    localStorage.setItem('userData', JSON.stringify(userData));
-  }
-
-  private addClassToStorage(trimmedClass: string) {
-    const userRawData = localStorage.getItem('userData');
-    let userData;
-    if (userRawData) {
-      userData = JSON.parse(userRawData) as Partial<UserData>;
-    } else {
-      userData = {classes: []};
-    }
-    userData.classes.push(trimmedClass);
-    localStorage.setItem('userData', JSON.stringify(userData));
-  }
-
-  private setSelectedSourcePathToStorage(selectedSourcePath: string) {
-    const userRawData = localStorage.getItem('userData');
-    let userData;
-    if (userRawData) {
-      userData = JSON.parse(userRawData) as Partial<UserData>;
-    } else {
-      userData = {classes: []};
-    }
-    userData.sourceDir = selectedSourcePath;
-    localStorage.setItem('userData', JSON.stringify(userData));
-  }
-
-  private setSelectedTargetPathToStorage(selectedTargetPath: string) {
-    const userRawData = localStorage.getItem('userData');
-    let userData;
-    if (userRawData) {
-      userData = JSON.parse(userRawData) as Partial<UserData>;
-    } else {
-      userData = {classes: []};
-    }
-    userData.targetDir = selectedTargetPath;
+    toExec(userData);
     localStorage.setItem('userData', JSON.stringify(userData));
   }
 }
