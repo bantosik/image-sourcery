@@ -1,6 +1,6 @@
 {
   "name": "imagesourcery",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "main": "main.js",
   "productName": "Image Sourcery",
   "scripts": {
