@@ -39,6 +39,7 @@ export class AppComponent implements OnInit {
   notificationMessage: string;
   notificationOpened: boolean;
   restartAvailable: boolean;
+  backgroundClass: string = 'white';
 
   constructor(private _electronService: ElectronService, private changeDetection: ChangeDetectorRef) {
 
@@ -100,6 +101,7 @@ export class AppComponent implements OnInit {
     const paths = this._electronService.remote.dialog.showOpenDialogSync({properties: ['openDirectory']});
     if (paths != null && paths.length > 0) {
       this.selectedSourcePath = paths[0];
+      this.current = 0;
       AppComponent.execInStorageRetrieval((userData) => { userData.sourceDir = this.selectedSourcePath });
       const files = this._electronService.ipcRenderer.sendSync('list-dir', this.selectedSourcePath);
       this.files = files;
@@ -242,5 +244,9 @@ export class AppComponent implements OnInit {
     }
     toExec(userData);
     localStorage.setItem('userData', JSON.stringify(userData));
+  }
+
+  changeClass(aClass: string) {
+    this.backgroundClass = aClass;
   }
 }

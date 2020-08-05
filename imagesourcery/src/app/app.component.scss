@@ -12,3 +12,28 @@
 .hidden {
   display: none;
 }
+
+#background-selector {
+  position: fixed;
+  top: 0;
+  right: 0;
+}
+
+div.pane {
+  background-repeat: no-repeat;
+  &.spring {
+    background-image: url("../assets/img/spring.jpg");
+  }
+  &.summer {
+    background-image: url("../assets/img/summer.jpg");
+  }
+  &.autumn {
+    background-image: url("../assets/img/autumn.jpg");
+  }
+  &.winter {
+    background-image: url("../assets/img/winter.jpg");
+  }
+  &.white {
+    background: none;
+  }
+}

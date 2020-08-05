@@ -50,8 +50,15 @@
           </div>
         </form>
       </div>
-      <div class="pane">
+      <div class="pane" [ngClass]="backgroundClass">
         <img *ngIf="currentFileData" [src]="currentFileData"/>
+        <div id="background-selector">
+          <button (click)="changeClass('spring')" class="btn btn-mini">Sp</button>
+          <button (click)="changeClass('summer')" class="btn btn-mini">Su</button>
+          <button (click)="changeClass('autumn')" class="btn btn-mini">Au</button>
+          <button (click)="changeClass('winter')" class="btn btn-mini">Wi</button>
+          <button (click)="changeClass('white')" class="btn btn-mini">Wh</button>
+        </div>
       </div>
     </div>
   </div>
